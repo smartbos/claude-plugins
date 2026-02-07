@@ -1,0 +1,18 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "smartbos-plugins",
+  "version": "1.0.0",
+  "description": "Personal productivity plugins",
+  "owner": {
+    "name": "smartbosslee"
+  },
+  "plugins": [
+    {
+      "name": "journal",
+      "description": "Journal recording and S-grade performance coaching",
+      "version": "1.1.0",
+      "source": "./plugins/journal",
+      "category": "productivity"
+    }
+  ]
+}
