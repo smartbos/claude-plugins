@@ -1,7 +1,7 @@
 {
   "name": "journal",
-  "version": "1.1.0",
-  "description": "Personal productivity tools: journal recording and S-grade performance coaching",
+  "version": "1.2.0",
+  "description": "Personal productivity tools: journal recording and S-grade performance coaching with evaluator perspective",
   "author": {
     "name": "smartbosslee"
   }
