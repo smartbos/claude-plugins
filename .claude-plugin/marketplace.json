@@ -10,7 +10,7 @@
     {
       "name": "journal",
       "description": "Journal recording and S-grade performance coaching with evaluator perspective",
-      "version": "1.2.1",
+      "version": "1.2.2",
       "source": "./plugins/journal",
       "category": "productivity"
     }
