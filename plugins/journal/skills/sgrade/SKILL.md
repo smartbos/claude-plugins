@@ -28,11 +28,23 @@ TZ='Asia/Seoul' date '+%Y-%m-%d %H:%M %a'
 
 | 유형 | 경로 |
 |------|------|
-| 저널 | `01.journals/연/월/일 요일.md` |
-| 주간 회고 | `02.projects/셀프평가/주간/YYYY-W##.md` |
-| 가이드 | `02.projects/셀프평가/셀프평가 가이드.md` |
+| 저널 | `{journal_root}/연/월/일 요일.md` |
+| 주간 회고 | `{workspace_root}/02.projects/셀프평가/주간/YYYY-W##.md` |
+| 가이드 | `{workspace_root}/02.projects/셀프평가/셀프평가 가이드.md` |
 
 요일 표기: 월, 화, 수, 목, 금, 토, 일
+
+### 경로 탐색
+
+journal 스킬과 동일한 하이브리드 방식으로 저널 루트를 찾는다:
+
+1. `.claude/journal.local.md`의 `journal_root` 확인 → 유효하면 사용
+2. 없거나 무효하면 → CWD에 `01.journals/` 확인
+3. 없으면 → `find . -maxdepth 3 -type d -name "01.journals" | head -5` 로 탐색
+4. 확정된 경로를 `.claude/journal.local.md`에 저장
+
+`workspace_root`는 `journal_root`의 부모 디렉토리다.
+예: `journal_root`가 `./my-notes/01.journals` → `workspace_root`는 `./my-notes`
 
 ## 12가지 핵심역량
 
@@ -81,7 +93,7 @@ TZ='Asia/Seoul' date '+%Y-%m-%d %H:%M %a'
 # KST 기준 오늘 날짜 확인
 TZ='Asia/Seoul' date '+%Y %m %d %a'
 ```
-해당 날짜의 저널 파일 읽기: `01.journals/연/월/일 요일.md`
+해당 날짜의 저널 파일 읽기: `{journal_root}/연/월/일 요일.md`
 
 ### 2단계: 역량 평가
 저널 내용을 12가지 역량 기준으로 분석:
@@ -180,13 +192,13 @@ TZ='Asia/Seoul' date '+%Y %m %d %a'
 
 ### 4단계: 이전 주간 회고 대비 성장 추적
 
-이전 주간 회고 파일(`02.projects/셀프평가/주간/`)을 읽어서:
+이전 주간 회고 파일(`{workspace_root}/02.projects/셀프평가/주간/`)을 읽어서:
 - 지난 주 "다음 주 포커스"로 제시한 항목의 달성 여부 확인
 - 반복되는 개선 영역이 실제로 나아지고 있는지 추적
 
 ### 5단계: 주간 회고 파일 생성
 
-`02.projects/셀프평가/주간/YYYY-W##.md` 형식으로 기록.
+`{workspace_root}/02.projects/셀프평가/주간/YYYY-W##.md` 형식으로 기록.
 
 파일에 포함할 섹션:
 1. 이번 주 핵심 요약 (한 문장)
@@ -219,4 +231,4 @@ TZ='Asia/Seoul' date '+%Y %m %d %a'
 
 ## 참조 문서
 
-상세 가이드는 `02.projects/셀프평가/셀프평가 가이드.md` 참조
+상세 가이드는 `{workspace_root}/02.projects/셀프평가/셀프평가 가이드.md` 참조
