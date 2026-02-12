@@ -9,8 +9,8 @@
   "plugins": [
     {
       "name": "journal",
-      "description": "Journal recording and S-grade performance coaching with evaluator perspective",
-      "version": "1.3.0",
+      "description": "Journal recording, S-grade performance coaching, and cross-vault journal merging",
+      "version": "1.4.0",
       "source": "./plugins/journal",
       "category": "productivity"
     }
