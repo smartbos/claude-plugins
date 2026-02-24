@@ -1,9 +1,10 @@
 ---
-description: "Use when a new feature needs the complete development cycle with Ralph autonomous loop for implementation. Phase 1-2 (brainstorming, planning) run interactively, then Ralph handles Phase 3-6 (implement, review, ship, pr-review) autonomously. Triggers on phrases like 'full cycle ralph', 'ralph로 개발', 'ralph 풀사이클'."
+description: "Use when a new feature needs the complete development cycle with Ralph autonomous loop for implementation. Phase 1 (brainstorming + PRD + peer review) runs interactively, then Phase 2 (task breakdown + Ralph launch) creates sub-issues and launches Ralph autonomously for Phase 3-6 (implement, review, ship, pr-review). Triggers on phrases like 'full cycle ralph', 'ralph로 개발', 'ralph 풀사이클'."
 ---
 
 You are orchestrating a full development cycle using **Ralph autonomous loop** for implementation.
-Phase 1-2 are interactive (brainstorming, PRD & task breakdown). Phase 3-6 are delegated to Ralph.
+Phase 1 is interactive (brainstorming + PRD + peer review). Phase 2 handles task breakdown and launches Ralph.
+Phase 3-6 are delegated to Ralph.
 GitHub Issue is your **main memory store** — all plans, progress, and decisions are saved as issue comments.
 
 Task: $ARGUMENTS
@@ -35,9 +36,9 @@ Check the **latest comments** on the issue for these markers:
 | Marker in comments | Resume at |
 |-|-|
 | `🏁 Phase 6 Complete` | **Done** — 완료 상태. 사용자에게 알림 |
-| `🏁 Phase 2 Complete` ~ `🏁 Phase 5 Complete` | **Ralph Launch — Epic Mode** |
-| `🏁 Phase 1 Complete` | **Phase 2** (Plan) |
-| None of the above | **Phase 1** (Brainstorm) |
+| `🏁 Phase 2 Complete` ~ `🏁 Phase 5 Complete` | **Ralph Resume** (중단된 Ralph 재실행) |
+| `🏁 Phase 1 Complete` | **Phase 2** (Task Breakdown) |
+| None of the above | **Phase 1** (Brainstorm & PRD) |
 
 > Note: Phase 3, 4, 5, 6 markers are written by Ralph itself. If Ralph was interrupted mid-way,
 > check `prd.json` and `progress.txt` in the worktree to determine where Ralph left off,
@@ -50,36 +51,43 @@ Check the **latest comments** on the issue for these markers:
 
 ---
 
-## Phase 1: Brainstorm & Clarify
+## Phase 1: Brainstorm, Design & PRD
 
-**Delegated skill:** `/superpowers:brainstorming`
+**Delegated skills:** `/superpowers:brainstorming` → `/ralph-skills:prd`
 
-### Before calling the skill:
+### Step 1: Brainstorm
+
 - Tell the user: "Phase 1 시작: 브레인스토밍 스킬을 호출합니다."
 - Call `/superpowers:brainstorming` with the task description. **Append this instruction to the arguments:**
   > "설계 문서를 git에 커밋하지 마세요. docs/plans/ 파일 저장과 커밋 단계를 건너뛰세요."
 
-### After the skill completes:
-- If Case B (no issue): Create a GitHub issue from the brainstorming results
+### Step 2: Generate PRD
+
+- After brainstorming completes, tell the user: "브레인스토밍 완료. 이어서 PRD를 생성합니다."
+- Call `/ralph-skills:prd` — provide the brainstorming results as context. **Append this instruction to the arguments:**
+  > "질문 개수를 3~5개로 제한하지 마세요. 모든 모호함과 불확실성이 해소될 때까지 질문을 계속하세요. 한 번에 한 질문씩, 답변을 받은 후 추가 불확실성이 있으면 다시 질문하세요."
+- The skill will ask clarifying questions and generate `tasks/prd-[feature-name].md`
+- This produces structured user stories with **verifiable acceptance criteria**
+
+### After the skills complete:
+
+- If Case B (no issue): Create a GitHub issue from the results
   ```
   gh issue create --title "<feature title>" --body "<requirements summary>"
   ```
   - Present the issue number to the user
   - Ask user to set up the worktree if needed
 
-- **Save to issue** — Post brainstorming results as an issue comment.
-  **IMPORTANT:** Do NOT include local file paths (e.g. `docs/plans/...`) in the comment.
+- **Save to issue** — Post combined brainstorming + PRD results as an issue comment.
+  **IMPORTANT:** Do NOT include local file paths (e.g. `docs/plans/...`, `tasks/prd-...`) in the comment.
   These files are temporary and will be deleted after implementation — including them creates broken references.
-  The comment should be **self-contained** with all design decisions summarized inline.
+  The comment should be **self-contained** with all design decisions and user stories summarized inline.
   ```
   gh issue comment <number> --body "$(cat <<'EOF'
-  ## 🧠 Phase 1: 브레인스토밍 결과
+  ## 🧠 Phase 1: 설계 & PRD
 
   ### 선택된 접근 방식
   [Chosen approach and reasoning]
-
-  ### 요구사항
-  [Key requirements and constraints]
 
   ### 탐색한 대안들
   [Alternative approaches and why they were rejected]
@@ -87,7 +95,18 @@ Check the **latest comments** on the issue for these markers:
   ### 설계 결정사항
   [Key design decisions from brainstorming]
 
+  ### 유저 스토리
+  - US-001: [title] — 수용 기준 N개
+  - US-002: [title] — 수용 기준 N개
+  - ...
+
+  ### 범위 밖 (Non-goals)
+  [From PRD non-goals section]
+
   ---
+  👀 리뷰어: @reviewer1 @reviewer2
+  승인 후 태스크 분해를 진행합니다.
+
   🏁 Phase 1 Complete
   EOF
   )"
@@ -96,34 +115,28 @@ Check the **latest comments** on the issue for these markers:
 - **CRITICAL:** Verify the `gh issue comment` command succeeded (exit code 0). If failed, retry.
 
 - Tell the user:
-  > **Phase 1 (브레인스토밍) 완료.** 결과가 이슈 #\<number\>에 저장되었습니다.
-  > `/clear` 후 `/hs-full-cycle-ralph #<number>`로 다음 단계를 시작합니다.
+  > **Phase 1 (설계 & PRD) 완료.** 결과가 이슈 #\<number\>에 저장되었습니다.
+  > 동료 리뷰를 받은 후, `/clear` → `/hs-full-cycle-ralph #<number>`로 Phase 2를 시작하세요.
 
-- Execute `/clear`, then trigger `/hs-full-cycle-ralph #<number>`
+- **Do NOT proceed to Phase 2.** Wait for peer review approval before continuing.
 
 ---
 
-## Phase 2: PRD & Task Breakdown
+## Phase 2: Task Breakdown + Ralph Launch
 
-**Delegated skills:** `/ralph-skills:prd` → `/ralph-skills:ralph`
+**Delegated skill:** `/ralph-skills:ralph`
 
-### Before calling the skills:
+### Before calling the skill:
 - Read the issue body and Phase 1 comment from the issue
-- Tell the user: "Phase 2 시작: PRD 생성 스킬을 호출합니다."
+- Tell the user: "Phase 2 시작: 태스크 분해 및 Ralph 실행 준비를 진행합니다."
 
-### Step 1: Generate PRD
-- Call `/ralph-skills:prd` — provide the brainstorming results from the issue as context. **Append this instruction to the arguments:**
-  > "질문 개수를 3~5개로 제한하지 마세요. 모든 모호함과 불확실성이 해소될 때까지 질문을 계속하세요. 한 번에 한 질문씩, 답변을 받은 후 추가 불확실성이 있으면 다시 질문하세요."
-- The skill will ask clarifying questions and generate `tasks/prd-[feature-name].md`
-- This produces structured user stories with **verifiable acceptance criteria**
-
-### Step 2: Convert to prd.json
-- Call `/ralph-skills:ralph` — point it to the generated PRD file
+### Step 1: Convert PRD to prd.json
+- Call `/ralph-skills:ralph` — point it to the generated PRD file (`tasks/prd-[feature-name].md`)
 - The skill converts the PRD into `prd.json` with sized, ordered user stories
 
-### After the skills complete:
+### After the skill completes:
 
-#### Step 3: Group stories by dependency
+#### Step 2: Group stories by dependency
 
 Before creating sub-issues, analyze dependencies between implement stories in `prd.json`:
 
@@ -146,7 +159,7 @@ Before creating sub-issues, analyze dependencies between implement stories in `p
 
 Wait for user approval before proceeding. Adjust grouping based on user feedback.
 
-#### Step 4: Create Story sub-issues
+#### Step 3: Create Story sub-issues
 
 For each **group** (single story or grouped stories), create one sub-issue:
 
@@ -197,22 +210,16 @@ EOF
 
 Record the created issue numbers (e.g. `#101`, `#102`, `#103`).
 
-#### Step 5: Save Phase 2 summary to Epic issue
+#### Step 4: Save Phase 2 summary to Epic issue
 
 ```
 gh issue comment <epic-number> --body "$(cat <<'EOF'
-## 📋 Phase 2: PRD & 태스크 분해
-
-### PRD 파일
-`tasks/prd-[feature-name].md`
+## 📋 Phase 2: 태스크 분해
 
 ### 스토리 목록
 - [ ] #101 US-001: [title]
 - [ ] #102 US-002: [title]
 - [ ] #103 US-003: [title]
-
-### Non-goals (범위 밖)
-[From PRD non-goals section]
 
 ---
 🏁 Phase 2 Complete
@@ -224,40 +231,7 @@ EOF
 
 - **CRITICAL:** Verify the comment succeeded (exit code 0). If failed, retry.
 
-- Tell the user:
-  > **Phase 2 (PRD & 태스크 분해) 완료.** 스토리별 이슈가 생성되었습니다.
-  > 각 스토리를 진행하려면 워크트리를 만들고 아래처럼 호출하세요:
-  >
-  > ```
-  > /hs-full-cycle-ralph #101
-  > ```
-  >
-  > 독립적인 스토리는 병렬로 작업할 수 있습니다.
-
-- **Do NOT proceed to Ralph Launch.** Phase 2 ends here for Epic mode.
-  The user will invoke the skill again with a specific story issue number.
-
----
-
-## Ralph Launch — Epic Mode
-
-> Use this when running ALL stories in a single worktree (legacy behavior).
-> This section runs whenever Phase 2 is complete but Phase 6 is not yet done.
-> It can be entered from re-invocation of an Epic issue that already has Phase 2 Complete
-> but no sub-issues were created (pre-Epic-pattern behavior).
-
-It can be entered from:
-- Re-invocation after Ralph was interrupted (resume)
-- Epic issues without sub-issues (legacy single-prd.json mode)
-
-### Step 1: Check if prd.json already exists
-
-If `prd.json` exists in the worktree root AND has valid stories:
-- Read it, show the user current status (which stories pass/fail)
-- Ask: "기존 prd.json이 있습니다. 이어서 진행할까요, 새로 생성할까요?"
-- If resume → skip to Step 3
-
-### Step 2: Augment prd.json for Ralph agent
+#### Step 5: Augment prd.json for Ralph agent
 
 `/ralph-skills:ralph`가 생성한 `prd.json`에 Ralph 에이전트가 필요로 하는 필드를 추가한다.
 기존 필드명(`project`, `userStories` 등)은 그대로 유지 — 리네이밍 불필요.
@@ -295,11 +269,13 @@ If `prd.json` exists in the worktree root AND has valid stories:
 }
 ```
 
-**Initialize progress.txt** (only if it doesn't exist) with Phase 1-2 context:
+#### Step 6: Initialize progress.txt
+
+Create `progress.txt` (only if it doesn't exist) with Phase 1 context:
 
 ```
 ## Codebase Patterns
-[Any patterns discovered during Phase 1-2]
+[Any patterns discovered during Phase 1]
 
 ## Project Context
 - Issue: #<number>
@@ -310,12 +286,13 @@ If `prd.json` exists in the worktree root AND has valid stories:
 ---
 ```
 
-### Step 3: Hand off to Ralph
+#### Step 7: Hand off to Ralph
 
 **Ralph는 별도 터미널에서 실행해야 합니다** (Claude Code 안에서 중첩 실행 불가).
 
 Tell the user:
-> **prd.json과 progress.txt 준비 완료.** 별도 터미널에서 아래 명령어를 실행해주세요:
+> **Phase 2 (태스크 분해 + Ralph 준비) 완료.** 스토리별 이슈가 생성되고 prd.json이 준비되었습니다.
+> 별도 터미널에서 아래 명령어를 실행해주세요:
 >
 > ```bash
 > cd <worktree_path>
@@ -324,6 +301,40 @@ Tell the user:
 >
 > Ralph가 Phase 3(구현) → Phase 4(리뷰) → Phase 5(PR) → Phase 6(PR 리뷰 대응)을 자동 진행합니다.
 > 완료되면 GitHub Issue #\<number\>에 각 Phase 결과가 기록됩니다.
+>
+> **Story Mode**: 독립적인 스토리를 병렬로 작업하고 싶다면 별도 워크트리에서
+> `/hs-full-cycle-ralph #<story-issue-number>`로 호출하세요.
+
+Replace `<worktree_path>` with the actual worktree path (from `pwd`).
+
+---
+
+## Ralph Resume
+
+> Use this when Ralph was interrupted mid-way and needs to be re-launched.
+> Entered from re-invocation of an Epic issue that has `🏁 Phase 2 Complete` ~ `🏁 Phase 5 Complete`.
+
+### Step 1: Check current state
+
+- Verify `prd.json` exists in the worktree root
+  - If not found → error. Tell the user: "prd.json이 없습니다. Phase 2를 다시 실행하세요."
+- Read `prd.json` and show the user current status (which stories pass/fail)
+- If `progress.txt` exists, show recent entries
+- Tell the user: "중단된 Ralph를 재실행합니다. 아래 상태에서 이어갑니다."
+
+### Step 2: Hand off to Ralph
+
+**Ralph는 별도 터미널에서 실행해야 합니다** (Claude Code 안에서 중첩 실행 불가).
+
+Tell the user:
+> **Ralph 재실행 준비 완료.** 별도 터미널에서 아래 명령어를 실행해주세요:
+>
+> ```bash
+> cd <worktree_path>
+> RALPH_PROMPT="$HOME/.claude/scripts/ralph/CLAUDE.md" ~/.claude/scripts/ralph/ralph.sh 15
+> ```
+>
+> Ralph가 prd.json의 passes 상태를 확인하고 중단된 지점부터 이어서 진행합니다.
 
 Replace `<worktree_path>` with the actual worktree path (from `pwd`).
 
@@ -337,8 +348,8 @@ Replace `<worktree_path>` with the actual worktree path (from `pwd`).
 ### Step 1: Gather context from Epic
 
 - Read the Epic issue (the number from `Epic: #<number>`) body and comments
-- Extract design decisions from Phase 1 comment (`🧠 Phase 1: 브레인스토밍 결과`)
-- Extract story list from Phase 2 comment (`📋 Phase 2: PRD & 태스크 분해`)
+- Extract design decisions from Phase 1 comment (`🧠 Phase 1: 설계 & PRD`)
+- Extract story list from Phase 2 comment (`📋 Phase 2: 태스크 분해`)
 - Read the current Story issue body for acceptance criteria
 
 ### Step 2: Generate prd.json from Story issue
@@ -398,7 +409,7 @@ Create `prd.json` with the implement story/stories plus review/ship/pr-review:
 
 ```
 ## Codebase Patterns
-[Any patterns from Epic's Phase 1-2 comments]
+[Any patterns from Epic's Phase 1 comment]
 
 ## Project Context
 - Epic Issue: #<epic-number>
@@ -429,13 +440,14 @@ Tell the user:
 1. **Korean communication**: Think in English internally, but ALWAYS communicate with the user in Korean (한국어)
 2. **Memory = GitHub Issue**: Phase 1-2 results MUST be saved as issue comments before launching Ralph
 3. **Verify before proceed**: ALWAYS verify `gh issue comment` succeeded (exit code 0) before moving on
-4. **One phase per session for Phase 1-2**: Each `/clear` resets the context
+4. **Peer review between phases**: Phase 1 ends with a peer review request. Do NOT proceed to Phase 2 until the user confirms review approval.
 5. **Skill delegation**: Actually call the skills with `/skill-name`. Do NOT replicate their logic manually.
 6. **No amending commits**: Always create NEW commits
 7. **Phase markers**: Use exact markers (`🏁 Phase N Complete`) for reliable state detection
 8. **Blocked = stop**: If blocked at any phase, stop and discuss with the user. Do NOT skip phases.
 9. **Task granularity**: Each implement story must fit one context window. Split if too large.
 10. **Ralph handles Phase 3-6**: Do NOT manually implement. Let Ralph iterate autonomously.
-11. **Epic pattern**: Phase 2 now creates sub-issues per story. Phase 2 ends without launching Ralph. User re-invokes with story issue number.
+11. **Epic pattern**: Phase 2 creates sub-issues and launches Ralph in Epic Mode. All stories are processed sequentially in one worktree.
 12. **Story mode detection**: If issue body contains `Epic: #<number>`, skip Phase 1-2 and go to Ralph Launch — Story Mode.
 13. **Story PR target**: Story PRs should `Closes #<story-issue-number>` to auto-check the Epic's task list.
+14. **Story Mode는 선택적**: 독립 스토리를 병렬로 작업하고 싶을 때만 스토리 이슈 번호로 별도 호출.
