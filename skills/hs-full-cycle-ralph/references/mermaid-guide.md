@@ -14,7 +14,14 @@
 
 ## Phase별 활용
 
-### Phase 1 (설계 & PRD)
+### Phase 1 (Product Discovery)
+
+유저 인터랙션 흐름과 비즈니스 정책을 시각화.
+
+- **필수**: User Journey Diagram (핵심 시나리오별 사용자 경험 흐름)
+- **필수**: 화면 흐름 Flowchart (화면 간 이동과 분기)
+
+### Phase 2 (설계 & PRD)
 
 설계 의도와 아키텍처를 전달하는 데 집중.
 
@@ -24,7 +31,7 @@
 
 > 다이어그램은 설계 결정사항과 유저 스토리 사이에 배치하여, 리뷰어가 결정 → 시각화 → 상세 스토리 순으로 읽게 한다.
 
-### Phase 2 (태스크 분해)
+### Phase 3 (태스크 분해)
 
 스토리 간 의존성을 시각화.
 
@@ -93,7 +100,7 @@ stateDiagram-v2
     취소 --> [*]
 ```
 
-### Story Dependency (Phase 2용)
+### Story Dependency (Phase 3용)
 
 ```mermaid
 flowchart TD
@@ -102,6 +109,35 @@ flowchart TD
     US002 --> REV["REV-001: 코드 리뷰"]
     US003 --> REV
     REV --> SHIP["SHIP-001: PR 생성"]
+```
+
+### User Journey Diagram (Phase 1용)
+
+```mermaid
+journey
+    title 사용자 시나리오: [시나리오명]
+    section 탐색
+        첫 화면 진입: 3: 사용자
+        목록 조회: 4: 사용자
+    section 핵심 액션
+        항목 선택: 5: 사용자
+        정보 입력: 3: 사용자
+        제출: 4: 사용자
+    section 결과
+        결과 확인: 5: 사용자
+```
+
+### Screen Flow Flowchart (Phase 1용)
+
+```mermaid
+flowchart TD
+    A[홈 화면] --> B[목록 화면]
+    B --> C{항목 선택}
+    C -->|신규| D[생성 화면]
+    C -->|기존| E[상세 화면]
+    D --> F[확인 화면]
+    E --> F
+    F --> B
 ```
 
 ### Architecture (subgraph)

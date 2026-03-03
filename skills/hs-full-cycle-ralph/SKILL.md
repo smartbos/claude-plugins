@@ -1,10 +1,10 @@
 ---
-description: "Use when a new feature needs the complete development cycle with Ralph autonomous loop for implementation. Phase 1 (brainstorming + PRD + peer review) runs interactively, then Phase 2 (task breakdown + Ralph launch) prepares prd.json and launches Ralph autonomously for Phase 3-6 (implement, review, ship, pr-review). Triggers on phrases like 'full cycle ralph', 'ralph로 개발', 'ralph 풀사이클'."
+description: "Use when a new feature needs the complete development cycle with Ralph autonomous loop for implementation. Phase 1 (product discovery + peer review) and Phase 2 (brainstorming + PRD + peer review) run interactively, then Phase 3 (task breakdown + Ralph launch) prepares prd.json and launches Ralph autonomously for Phase 4-7 (implement, review, ship, pr-review). Triggers on phrases like 'full cycle ralph', 'ralph로 개발', 'ralph 풀사이클'."
 ---
 
 You are orchestrating a full development cycle using **Ralph autonomous loop** for implementation.
-Phase 1 is interactive (brainstorming + PRD + peer review). Phase 2 handles task breakdown and launches Ralph.
-Phase 3-6 are delegated to Ralph.
+Phase 1-2 are interactive (product discovery + brainstorming + PRD + peer review). Phase 3 handles task breakdown and launches Ralph.
+Phase 4-7 are delegated to Ralph.
 GitHub Issue is your **main memory store** — all plans, progress, and decisions are saved as issue comments.
 Mermaid 다이어그램을 활용하여 설계와 구현 결과를 시각적으로 전달한다. 유형 선택과 작성법은 [references/mermaid-guide.md](references/mermaid-guide.md) 참조.
 
@@ -21,7 +21,7 @@ Task: $ARGUMENTS
 - Proceed to Step 2.
 
 **Case B — No issue number:**
-- Tell the user: "이슈 번호가 없습니다. Phase 1에서 브레인스토밍 후 이슈를 생성합니다."
+- Tell the user: "이슈 번호가 없습니다. Phase 1에서 Product Discovery 후 이슈를 생성합니다."
 - Proceed to Phase 1
 
 ### Step 2: Route to the correct phase
@@ -30,12 +30,13 @@ Check the **latest comments** on the issue for these markers:
 
 | Marker in comments | Resume at |
 |-|-|
-| `🏁 Phase 6 Complete` | **Done** — 완료 상태. 사용자에게 알림 |
-| `🏁 Phase 2 Complete` ~ `🏁 Phase 5 Complete` | **Ralph Resume** (중단된 Ralph 재실행) |
-| `🏁 Phase 1 Complete` | **Phase 2** (Task Breakdown) |
-| None of the above | **Phase 1** (Brainstorm & PRD) |
+| `🏁 Phase 7 Complete` | **Done** — 완료 상태. 사용자에게 알림 |
+| `🏁 Phase 3 Complete` ~ `🏁 Phase 6 Complete` | **Ralph Resume** (중단된 Ralph 재실행) |
+| `🏁 Phase 2 Complete` | **Phase 3** (Task Breakdown) |
+| `🏁 Phase 1 Complete` | **Phase 2** (Brainstorm & PRD) |
+| None of the above | **Phase 1** (Product Discovery) |
 
-> Note: Phase 3, 4, 5, 6 markers are written by Ralph itself. If Ralph was interrupted mid-way,
+> Note: Phase 4, 5, 6, 7 markers are written by Ralph itself. If Ralph was interrupted mid-way,
 > check `prd.json` and `progress.txt` in the worktree to determine where Ralph left off,
 > then re-launch Ralph to continue (prd.json에 passes 상태가 남아있으므로 이어서 진행됨).
 
@@ -46,13 +47,164 @@ Check the **latest comments** on the issue for these markers:
 
 ---
 
-## Phase 1: Brainstorm, Design & PRD
+## Phase 1: Product Discovery
+
+**Delegated skill:** `/product-designer` (Step 2)
+
+**목표:** 기술 설계 전에 "무엇을 만들 것인가"를 정의하고 팀 합의를 도출한다.
+
+### Step 1: 레포 정보 확인
+
+```bash
+gh repo view --json owner,name --jq '"\(.owner.login)/\(.name)"'
+```
+
+결과를 `{owner}/{repo}`로 저장한다 (이후 와이어프레임 이미지 URL에 사용).
+
+### Step 2: Product Discovery 인터뷰
+
+**Delegated skill:** `/product-designer`
+
+- Tell the user: "Product Discovery 인터뷰를 시작합니다. UX 프레임워크를 활용하여 체계적으로 진행합니다."
+- Call `/product-designer` with the task description. **Append this instruction to the arguments:**
+  > "Double Diamond의 Discover 단계로 제품 발견 인터뷰를 진행하세요. 아래 5개 영역을 순서대로, 한 번에 한 질문씩 물어보세요. 각 답변이 불충분하면 후속 질문으로 구체화하세요.
+  > 1. **페르소나 정의**: User Journey Mapping 프레임워크를 활용하여 주 사용자의 역할, 기술 수준, 핵심 동기, 페인 포인트를 파악하세요.
+  > 2. **핵심 유저 시나리오**: 사용자가 달성하려는 주요 목표 1-3개를 User Journey 단계(Awareness → Consideration → Action → Retention)로 구조화하세요.
+  > 3. **화면 인벤토리**: Information Architecture (Site Map)를 참고하여 시나리오 기반 화면 구조 초안을 제안하고, 사용자에게 수정/확정을 받으세요.
+  > 4. **핵심 비즈니스 룰**: 권한, 제한, 유효성 검사 등 정책을 파악하세요.
+  > 5. **엣지 케이스**: 빈 상태, 동시성, 에러, 대량 데이터 시나리오를 파악하세요.
+  > 최종 결과물로 파일을 생성하지 마세요. 대화로만 진행하세요."
+
+### Step 3: UX 플로우 Mermaid 생성
+
+[references/mermaid-guide.md](references/mermaid-guide.md)의 "Phase 1" 섹션을 참고하여:
+
+- **User Journey Diagram**: 핵심 시나리오별 사용자 경험 흐름 (필수)
+- **Screen Flow Flowchart**: 화면 간 이동과 분기 (필수)
+
+생성한 다이어그램을 사용자에게 보여주고 피드백을 반영한다.
+
+### Step 4: 정책/비즈니스 룰 테이블 정리
+
+인터뷰 결과를 아래 형식으로 정리한다:
+
+**비즈니스 룰:**
+```
+| # | 카테고리 | 규칙 | 세부사항 |
+|---|----------|------|----------|
+```
+
+**엣지 케이스:**
+```
+| # | 시나리오 | 예상 동작 |
+|---|----------|-----------|
+```
+
+사용자에게 보여주고 확인받는다.
+
+### Step 5: HTML 와이어프레임 생성 & Playwright 스크린샷
+
+#### 5-1. 와이어프레임 HTML 작성
+
+- `wireframes/` 디렉토리 생성
+- 각 화면별 lo-fi HTML 파일 작성 (인라인 CSS, 외부 의존성 없음)
+  - **Lo-fi 스타일**: 배경 `#f5f5f5`, 카드 `#fff`, 테두리 `#ddd`, 버튼 `#666`+`#fff`, font-family sans-serif 14px, max-width 800px
+  - **한국어 텍스트**, 실제 데이터와 유사한 더미 데이터
+
+#### 5-2. Playwright 스크린샷 촬영
+
+ToolSearch로 Playwright 도구를 로드한 후:
+
+1. 로컬 HTTP 서버 시작:
+   ```bash
+   python3 -m http.server 8090 --directory wireframes/ &
+   ```
+2. 각 HTML 파일에 대해:
+   - `browser_navigate` → `http://localhost:8090/{filename}.html`
+   - `browser_take_screenshot` → 스크린샷 저장
+3. 서버 종료
+
+#### 5-3. 커밋 & 푸시
+
+```bash
+git add wireframes/
+git commit -m "feat: Phase 1 와이어프레임 추가"
+git push
+```
+
+### Step 6: GitHub Issue에 Phase 1 결과 포스팅
+
+**Case B (이슈 없음):** 먼저 이슈를 생성한다.
+```bash
+gh issue create --title "<feature title>" --body "<brief description>"
+```
+
+Phase 1 결과를 이슈 코멘트로 포스팅한다:
+
+```
+gh issue comment <number> --body "$(cat <<'EOF'
+## 🔍 Phase 1: Product Discovery
+
+### 페르소나
+[페르소나 정의 — 역할, 기술 수준, 동기]
+
+### User Journey
+[Mermaid User Journey Diagram(s)]
+
+### 화면 흐름
+[Mermaid Screen Flow Flowchart]
+
+### 와이어프레임
+
+<details>
+<summary>화면 스크린샷 (클릭하여 펼치기)</summary>
+
+#### [화면명 1]
+![화면명 1](https://raw.githubusercontent.com/{owner}/{repo}/{branch}/wireframes/{filename1}.png)
+
+#### [화면명 2]
+![화면명 2](https://raw.githubusercontent.com/{owner}/{repo}/{branch}/wireframes/{filename2}.png)
+
+</details>
+
+### 비즈니스 룰
+| # | 카테고리 | 규칙 | 세부사항 |
+|---|----------|------|----------|
+[테이블 내용]
+
+### 엣지 케이스
+| # | 시나리오 | 예상 동작 |
+|---|----------|-----------|
+[테이블 내용]
+
+---
+👀 리뷰어: @reviewer1 @reviewer2
+승인 후 설계 & PRD를 진행합니다.
+
+🏁 Phase 1 Complete
+EOF
+)"
+```
+
+- **CRITICAL:** `gh issue comment` 명령의 exit code가 0인지 검증한다. 실패 시 재시도.
+
+### Step 7: 사용자 안내 (리뷰 게이트)
+
+Tell the user:
+> **Phase 1 (Product Discovery) 완료.** 결과가 이슈 #\<number\>에 저장되었습니다.
+> 동료 리뷰를 받은 후, `/clear` → `/hs-full-cycle-ralph #<number>`로 Phase 2를 시작하세요.
+
+- **Do NOT proceed to Phase 2.** Wait for peer review approval before continuing.
+
+---
+
+## Phase 2: Brainstorm, Design & PRD
 
 **Delegated skills:** `/superpowers:brainstorming` → `/ralph-skills:prd`
 
 ### Step 1: Brainstorm
 
-- Tell the user: "Phase 1 시작: 브레인스토밍 스킬을 호출합니다."
+- Tell the user: "Phase 2 시작: 브레인스토밍 스킬을 호출합니다."
 - Call `/superpowers:brainstorming` with the task description. **Append this instruction to the arguments:**
   > "설계 문서를 git에 커밋하지 마세요. docs/plans/ 파일 저장과 커밋 단계를 건너뛰세요."
 
@@ -66,7 +218,7 @@ Check the **latest comments** on the issue for these markers:
 
 ### After the skills complete:
 
-- **Mermaid 다이어그램 생성**: Read [references/mermaid-guide.md](references/mermaid-guide.md)의 "Phase 1" 섹션을 참고하여 설계에 적합한 다이어그램 1-3개를 생성한다.
+- **Mermaid 다이어그램 생성**: Read [references/mermaid-guide.md](references/mermaid-guide.md)의 "Phase 2" 섹션을 참고하여 설계에 적합한 다이어그램 1-3개를 생성한다.
   - 핵심 요청/데이터 흐름 → Sequence Diagram 또는 Flowchart (필수)
   - 데이터 모델 변경 → ER Diagram (해당 시)
   - 상태 전이 존재 → State Diagram (해당 시)
@@ -81,10 +233,16 @@ Check the **latest comments** on the issue for these markers:
 - **Save to issue** — Post combined brainstorming + PRD results as an issue comment.
   **IMPORTANT:** Do NOT include local file paths (e.g. `docs/plans/...`, `tasks/prd-...`) in the comment.
   These files are temporary and will be deleted after implementation — including them creates broken references.
-  The comment should be **self-contained** with all design decisions and user stories summarized inline.
+  The comment should be **self-contained** with all design decisions and user stories inline.
+  **User stories must include full details** (description + acceptance criteria) inside collapsible `<details>` tags
+  so that reviewers can expand each story to see the complete specification.
+  This also serves as the **single source of truth** — if the worktree is lost or another person/instance
+  takes over, the issue comment must contain enough detail to regenerate `prd.json`.
+  **Do NOT use checkboxes (`- [ ]`)** for acceptance criteria — progress is tracked via `prd.json`, not issue comments.
+  Use plain bullets (`- `) instead.
   ```
   gh issue comment <number> --body "$(cat <<'EOF'
-  ## 🧠 Phase 1: 설계 & PRD
+  ## 🧠 Phase 2: 설계 & PRD
 
   ### 선택된 접근 방식
   [Chosen approach and reasoning]
@@ -98,10 +256,32 @@ Check the **latest comments** on the issue for these markers:
   ### 아키텍처 다이어그램
   [Mermaid diagram(s) — 설계에서 도출된 핵심 흐름, 데이터 모델, 상태 전이 등을 시각화]
 
+  ### 스토리 의존 관계
+  [Mermaid flowchart — 스토리 간 실행 순서와 의존 관계. 병렬 가능한 스토리는 같은 레벨에 배치]
+
   ### 유저 스토리
-  - US-001: [title] — 수용 기준 N개
-  - US-002: [title] — 수용 기준 N개
+
+  <details>
+  <summary><b>US-001: [title]</b> — [phase/tag]</summary>
+
+  **Description:** As a [user], I want [feature] so that [benefit].
+
+  **Acceptance Criteria:**
+  - Criterion 1
+  - Criterion 2
   - ...
+  </details>
+
+  <details>
+  <summary><b>US-002: [title]</b> — [phase/tag]</summary>
+
+  **Description:** ...
+
+  **Acceptance Criteria:**
+  - ...
+  </details>
+
+  [Repeat for all stories — each in its own <details> block]
 
   ### 범위 밖 (Non-goals)
   [From PRD non-goals section]
@@ -110,7 +290,7 @@ Check the **latest comments** on the issue for these markers:
   👀 리뷰어: @reviewer1 @reviewer2
   승인 후 태스크 분해를 진행합니다.
 
-  🏁 Phase 1 Complete
+  🏁 Phase 2 Complete
   EOF
   )"
   ```
@@ -118,20 +298,20 @@ Check the **latest comments** on the issue for these markers:
 - **CRITICAL:** Verify the `gh issue comment` command succeeded (exit code 0). If failed, retry.
 
 - Tell the user:
-  > **Phase 1 (설계 & PRD) 완료.** 결과가 이슈 #\<number\>에 저장되었습니다.
-  > 동료 리뷰를 받은 후, `/clear` → `/hs-full-cycle-ralph #<number>`로 Phase 2를 시작하세요.
+  > **Phase 2 (설계 & PRD) 완료.** 결과가 이슈 #\<number\>에 저장되었습니다.
+  > 동료 리뷰를 받은 후, `/clear` → `/hs-full-cycle-ralph #<number>`로 Phase 3를 시작하세요.
 
-- **Do NOT proceed to Phase 2.** Wait for peer review approval before continuing.
+- **Do NOT proceed to Phase 3.** Wait for peer review approval before continuing.
 
 ---
 
-## Phase 2: Task Breakdown + Ralph Launch
+## Phase 3: Task Breakdown + Ralph Launch
 
 **Delegated skill:** `/ralph-skills:ralph`
 
 ### Before calling the skill:
-- Read the issue body and Phase 1 comment from the issue
-- Tell the user: "Phase 2 시작: 태스크 분해 및 Ralph 실행 준비를 진행합니다."
+- Read the issue body and Phase 1 and Phase 2 comments from the issue
+- Tell the user: "Phase 3 시작: 태스크 분해 및 Ralph 실행 준비를 진행합니다."
 
 ### Step 1: Convert PRD to prd.json
 - Call `/ralph-skills:ralph` — point it to the generated PRD file (`tasks/prd-[feature-name].md`)
@@ -181,7 +361,7 @@ Check the **latest comments** on the issue for these markers:
 
 ```
 gh issue comment <number> --body "$(cat <<'EOF'
-## 📋 Phase 2: 태스크 분해
+## 📋 Phase 3: 태스크 분해
 
 ### 스토리 목록
 - US-001: [title]
@@ -195,7 +375,7 @@ gh issue comment <number> --body "$(cat <<'EOF'
 Ralph 실행 준비가 완료되었습니다.
 
 ---
-🏁 Phase 2 Complete
+🏁 Phase 3 Complete
 EOF
 )"
 ```
@@ -224,7 +404,7 @@ Create `progress.txt` (only if it doesn't exist) with Phase 1 context:
 **Ralph는 별도 터미널에서 실행해야 합니다** (Claude Code 안에서 중첩 실행 불가).
 
 Tell the user:
-> **Phase 2 (태스크 분해 + Ralph 준비) 완료.** prd.json이 준비되었습니다.
+> **Phase 3 (태스크 분해 + Ralph 준비) 완료.** prd.json이 준비되었습니다.
 > 별도 터미널에서 아래 명령어를 실행해주세요:
 >
 > ```bash
@@ -232,7 +412,7 @@ Tell the user:
 > RALPH_PROMPT="$HOME/.claude/scripts/ralph/CLAUDE.md" ~/.claude/scripts/ralph/ralph.sh 15
 > ```
 >
-> Ralph가 Phase 3(구현) → Phase 4(리뷰) → Phase 5(PR) → Phase 6(PR 리뷰 대응)을 자동 진행합니다.
+> Ralph가 Phase 4(구현) → Phase 5(리뷰) → Phase 6(PR) → Phase 7(PR 리뷰 대응)을 자동 진행합니다.
 > 완료되면 GitHub Issue #\<number\>에 각 Phase 결과가 기록됩니다.
 
 Replace `<worktree_path>` with the actual worktree path (from `pwd`).
@@ -242,7 +422,7 @@ Replace `<worktree_path>` with the actual worktree path (from `pwd`).
 ## Ralph Resume
 
 > Use this when Ralph was interrupted mid-way and needs to be re-launched.
-> Entered from re-invocation of an issue that has `🏁 Phase 2 Complete` ~ `🏁 Phase 5 Complete`.
+> Entered from re-invocation of an issue that has `🏁 Phase 3 Complete` ~ `🏁 Phase 6 Complete`.
 
 ### Step 1: Check current state
 
@@ -273,12 +453,12 @@ Replace `<worktree_path>` with the actual worktree path (from `pwd`).
 ## IMPORTANT RULES
 
 1. **Korean communication**: Think in English internally, but ALWAYS communicate with the user in Korean (한국어)
-2. **Memory = GitHub Issue**: Phase 1-2 results MUST be saved as issue comments before launching Ralph
+2. **Memory = GitHub Issue**: Phase 1-3 results MUST be saved as issue comments before launching Ralph
 3. **Verify before proceed**: ALWAYS verify `gh issue comment` succeeded (exit code 0) before moving on
-4. **Peer review between phases**: Phase 1 ends with a peer review request. Do NOT proceed to Phase 2 until the user confirms review approval.
+4. **Peer review between phases**: Phase 1 and Phase 2 each end with a peer review request. Do NOT proceed to the next phase until the user confirms review approval.
 5. **Skill delegation**: Actually call the skills with `/skill-name`. Do NOT replicate their logic manually.
 6. **No amending commits**: Always create NEW commits
 7. **Phase markers**: Use exact markers (`🏁 Phase N Complete`) for reliable state detection
 8. **Blocked = stop**: If blocked at any phase, stop and discuss with the user. Do NOT skip phases.
 9. **Task granularity**: Each implement story must fit one context window. Split if too large.
-10. **Ralph handles Phase 3-6**: Do NOT manually implement. Let Ralph iterate autonomously.
+10. **Ralph handles Phase 4-7**: Do NOT manually implement. Let Ralph iterate autonomously.

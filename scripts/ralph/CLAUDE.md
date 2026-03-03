@@ -1,4 +1,4 @@
-# Ralph Agent - Full Cycle (Phase 3-6)
+# Ralph Agent - Full Cycle (Phase 4-7)
 
 You are an autonomous coding agent completing a feature development cycle.
 Each iteration is a fresh instance with clean context.
@@ -35,7 +35,7 @@ The issue number is in `prd.json` field `issueNumber`.
 **After all `implement` stories pass:**
 ```bash
 gh issue comment <issueNumber> --body "$(cat <<'GHEOF'
-## 🔨 Phase 3: 구현 완료
+## 🔨 Phase 4: 구현 완료
 
 ### 구현된 변경사항
 [Summarize what was implemented across all stories]
@@ -47,7 +47,7 @@ gh issue comment <issueNumber> --body "$(cat <<'GHEOF'
 [Any issues or deviations from plan]
 
 ---
-🏁 Phase 3 Complete
+🏁 Phase 4 Complete
 GHEOF
 )"
 ```
@@ -55,7 +55,7 @@ GHEOF
 **After all `review` stories pass:**
 ```bash
 gh issue comment <issueNumber> --body "$(cat <<'GHEOF'
-## 🔍 Phase 4: 리뷰 완료
+## 🔍 Phase 5: 리뷰 완료
 
 ### 리뷰 결과
 [Review findings and actions taken]
@@ -67,7 +67,7 @@ gh issue comment <issueNumber> --body "$(cat <<'GHEOF'
 [What was fixed based on review]
 
 ---
-🏁 Phase 4 Complete
+🏁 Phase 5 Complete
 GHEOF
 )"
 ```
@@ -75,7 +75,7 @@ GHEOF
 **After all `ship` stories pass:**
 ```bash
 gh issue comment <issueNumber> --body "$(cat <<'GHEOF'
-## 🚀 Phase 5: 최종 검증 및 PR 생성
+## 🚀 Phase 6: 최종 검증 및 PR 생성
 
 ### 검증 결과
 [Verification evidence]
@@ -84,7 +84,7 @@ gh issue comment <issueNumber> --body "$(cat <<'GHEOF'
 [PR link]
 
 ---
-🏁 Phase 5 Complete
+🏁 Phase 6 Complete
 GHEOF
 )"
 ```
@@ -92,7 +92,7 @@ GHEOF
 **After all `pr-review` stories pass:**
 ```bash
 gh issue comment <issueNumber> --body "$(cat <<'GHEOF'
-## 🔄 Phase 6: PR 리뷰 대응 완료
+## 🔄 Phase 7: PR 리뷰 대응 완료
 
 ### 리뷰 사이클 요약
 [Number of review cycles completed]
@@ -104,7 +104,7 @@ gh issue comment <issueNumber> --body "$(cat <<'GHEOF'
 [Rejected feedback with reasoning]
 
 ---
-🏁 Phase 6 Complete — Full Cycle Done
+🏁 Phase 7 Complete — Full Cycle Done
 GHEOF
 )"
 ```
@@ -134,7 +134,7 @@ When working on `review` phase stories:
 
 ### 4. Intentional Decisions Audit
 - Read the `Non-goals` section from the PRD (in `tasks/prd-*.md`)
-- Read the issue comments for any design decisions from Phase 1-2
+- Read the issue comments for any design decisions from Phase 1-3
 - Create a list of **intentionally excluded items** with reasoning
 - Document these in `progress.txt` under `## Intentional Decisions (Non-goals)`
 - These will be included in the PR body to prevent CI reviewers from flagging them
