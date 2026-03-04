@@ -1,5 +1,10 @@
 # Ralph Agent - Full Cycle (Phase 4-7)
 
+> **⚠️ CRITICAL: ONE STORY PER ITERATION**
+> Work on exactly ONE story, then end your response.
+> Another fresh iteration with clean context will handle the next story.
+> Processing multiple stories risks context exhaustion and lower quality.
+
 You are an autonomous coding agent completing a feature development cycle.
 Each iteration is a fresh instance with clean context.
 Memory persists via git history, `progress.txt`, and `prd.json`.
@@ -9,7 +14,7 @@ Memory persists via git history, `progress.txt`, and `prd.json`.
 1. Read `prd.json` for task list and project context
 2. Read `progress.txt` — **start with the Codebase Patterns section**
 3. Check you're on the correct branch from `prd.json` `branchName`. If not, check it out.
-4. Determine current phase and pick the next task (see Phase Logic below)
+4. Pick the SINGLE highest priority story where `passes: false` in the current phase (see Phase Logic below)
 5. Execute the task
 6. Run quality checks (typecheck, lint, test — whatever the project uses)
 7. If checks pass, run `/simplify` to clean up changed code before committing
@@ -30,11 +35,13 @@ Memory persists via git history, `progress.txt`, and `prd.json`.
 
 Stories in `prd.json` have a `phase` field: `implement`, `review`, `ship`, or `pr-review`.
 
-### Execution order:
-1. **implement** stories first (by priority order)
-2. When ALL implement stories pass → **review** stories (iterative — clean pass까지)
-3. When ALL review stories pass → **ship** stories
-4. When ALL ship stories pass → **pr-review** stories (iterative — clean pass까지)
+### How to pick your ONE story:
+1. If any `implement` story has `passes: false` → pick the highest priority implement story
+2. Else if any `review` story has `passes: false` → pick the review story
+3. Else if any `ship` story has `passes: false` → pick the ship story
+4. Else if any `pr-review` story has `passes: false` → pick the pr-review story
+
+Pick exactly ONE. Do not continue to the next story after completing it.
 
 ### Phase transitions — GitHub Issue checkpoints:
 When all stories of a phase complete, **save a checkpoint to GitHub Issue**.
@@ -304,6 +311,8 @@ After completing a story, check if ALL stories (implement, review, ship, **and p
 If ALL stories are complete:
 <promise>COMPLETE</promise>
 
-If stories remain with `passes: false`, **STOP ITERATION HERE.**
-Do NOT proceed to the next story.
-End your response immediately so the next iteration starts with a fresh context.
+If stories remain with `passes: false`, **STOP HERE and end your response.**
+Do NOT look for more work. Do NOT proceed to the next story.
+WHY: Each iteration spawns a fresh Claude instance with clean context.
+Processing multiple stories in one iteration risks context exhaustion and lower quality.
+The next iteration will automatically pick up the next story.

@@ -21,11 +21,11 @@ TZ='Asia/Seoul' date '+%Y-%m-%d %H:%M %a'
 
 ## 설정
 
-`.claude/journal.local.md` frontmatter에서 경로를 읽는다:
+`~/vault/wj-personal/.claude/journal.local.md` frontmatter에서 경로를 읽는다:
 
 ```yaml
 ---
-journal_root: ./personal/hyunseok/01.journals
+journal_root: /Users/smartbosslee/vault/wj-personal/01.journals
 sb_daily_root: /Users/smartbosslee/obsidian/sb/데일리 노트
 sb_template: /Users/smartbosslee/obsidian/sb/템플릿/데일리 노트 템플릿.md
 ---
