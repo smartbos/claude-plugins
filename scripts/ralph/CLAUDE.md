@@ -12,10 +12,11 @@ Memory persists via git history, `progress.txt`, and `prd.json`.
 4. Determine current phase and pick the next task (see Phase Logic below)
 5. Execute the task
 6. Run quality checks (typecheck, lint, test — whatever the project uses)
-7. If checks pass, commit ALL changes: `feat: [Story ID] - [Story Title]`
-8. Update `prd.json` to set `passes: true` for the completed story
-9. Append progress to `progress.txt`
-10. Handle phase transitions (see below)
+7. If checks pass, run `/simplify` to clean up changed code before committing
+8. Commit ALL changes: `feat: [Story ID] - [Story Title]`
+9. Update `prd.json` to set `passes: true` for the completed story
+10. Append progress to `progress.txt`
+11. Handle phase transitions (see below)
 
 ## Context Protection
 
@@ -131,14 +132,8 @@ When working on `review` phase stories:
 - For each criterion, verify with concrete evidence (test output, code reference)
 - If any criterion is NOT met, fix it before proceeding
 
-### 3. Self-Code-Review Checklist
-- Check for style/lint issues
-- Look for hardcoded values that should be configurable
-- Check error handling — are edge cases covered?
-- Check security — no injection, no secrets in code
-- Check naming — consistent with existing codebase conventions
-- Check imports — no unused imports, no circular dependencies
-- Look for code that "works but could be cleaner" — fix obvious issues
+### 3. Code Simplification
+- Run `/simplify` on all changed files to clean up code quality, consistency, and maintainability
 
 ### 4. Intentional Decisions Audit
 - Read the `Non-goals` section from the PRD (in `tasks/prd-*.md`)
