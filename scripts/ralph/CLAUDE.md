@@ -17,6 +17,14 @@ Memory persists via git history, `progress.txt`, and `prd.json`.
 9. Append progress to `progress.txt`
 10. Handle phase transitions (see below)
 
+## Context Protection
+
+- Story 작업 시작 시, progress.txt에 현재 작업 상태를 기록하라:
+  `## 🔄 In Progress: [Story ID] - [step description]`
+- 무거운 작업(테스트 실행, git diff, sub-agent 리뷰) 후에는
+  반드시 `prd.json`과 `progress.txt`를 다시 읽어 컨텍스트를 복구하라.
+- Story 완료 시 `🔄 In Progress` 마커를 제거하라.
+
 ## Phase Logic
 
 Stories in `prd.json` have a `phase` field: `implement`, `review`, `ship`, or `pr-review`.
@@ -301,4 +309,6 @@ After completing a story, check if ALL stories (implement, review, ship, **and p
 If ALL stories are complete:
 <promise>COMPLETE</promise>
 
-If stories remain with `passes: false`, end your response normally.
+If stories remain with `passes: false`, **STOP ITERATION HERE.**
+Do NOT proceed to the next story.
+End your response immediately so the next iteration starts with a fresh context.
