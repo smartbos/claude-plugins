@@ -59,7 +59,7 @@ Check the **latest comments** on the issue for these markers:
 gh repo view --json owner,name --jq '"\(.owner.login)/\(.name)"'
 ```
 
-결과를 `{owner}/{repo}`로 저장한다 (이후 와이어프레임 이미지 URL에 사용).
+결과를 `{owner}/{repo}`로 저장한다 (이슈 생성 등에 사용).
 
 ### Step 2: Product Discovery 인터뷰
 
@@ -121,16 +121,18 @@ ToolSearch로 Playwright 도구를 로드한 후:
    ```
 2. 각 HTML 파일에 대해:
    - `browser_navigate` → `http://localhost:8090/{filename}.html`
-   - `browser_take_screenshot` → 스크린샷 저장
+   - `browser_take_screenshot` → 스크린샷 저장 (파일명: `wireframes/{화면명}.png`)
 3. 서버 종료
 
-#### 5-3. 커밋 & 푸시
+#### 5-3. 로컬 프리뷰 & 사용자 확인
+
+> **IMPORTANT:** 와이어프레임 파일(HTML, PNG)은 커밋하지 않는다. 로컬 프리뷰용으로만 사용.
 
 ```bash
-git add wireframes/
-git commit -m "feat: Phase 1 와이어프레임 추가"
-git push
+open wireframes/*.png  # macOS에서 스크린샷을 미리보기로 열기
 ```
+
+사용자에게 와이어프레임을 보여주고 피드백을 반영한다. 수정이 필요하면 5-1 ~ 5-2를 반복한다.
 
 ### Step 6: GitHub Issue에 Phase 1 결과 포스팅
 
@@ -159,11 +161,13 @@ gh issue comment <number> --body "$(cat <<'EOF'
 <details>
 <summary>화면 스크린샷 (클릭하여 펼치기)</summary>
 
+> ⚠️ 아래 플레이스홀더를 이미지로 교체해주세요. 이 코멘트 편집 → 각 플레이스홀더 선택 → 이미지 드래그앤드롭.
+
 #### [화면명 1]
-![화면명 1](https://raw.githubusercontent.com/{owner}/{repo}/{branch}/wireframes/{filename1}.png)
+`[📎 이미지를 여기에 드롭: 화면명 1]`
 
 #### [화면명 2]
-![화면명 2](https://raw.githubusercontent.com/{owner}/{repo}/{branch}/wireframes/{filename2}.png)
+`[📎 이미지를 여기에 드롭: 화면명 2]`
 
 </details>
 
@@ -188,10 +192,26 @@ EOF
 
 - **CRITICAL:** `gh issue comment` 명령의 exit code가 0인지 검증한다. 실패 시 재시도.
 
+#### 코멘트 편집 URL 제공
+
+코멘트 작성 후, 마지막 코멘트 URL을 가져와서 사용자에게 안내한다:
+
+```bash
+COMMENT_URL=$(gh api repos/{owner}/{repo}/issues/<number>/comments --jq '.[-1].html_url')
+echo "코멘트 URL: $COMMENT_URL"
+```
+
 ### Step 7: 사용자 안내 (리뷰 게이트)
 
 Tell the user:
 > **Phase 1 (Product Discovery) 완료.** 결과가 이슈 #\<number\>에 저장되었습니다.
+>
+> 📎 **와이어프레임 이미지 업로드가 필요합니다:**
+> 1. 코멘트 링크를 열어주세요: \<COMMENT_URL\>
+> 2. 코멘트 우측 상단 `···` → **Edit** 클릭
+> 3. 각 `[📎 이미지를 여기에 드롭: ...]` 플레이스홀더를 선택 후 로컬 스크린샷(`wireframes/*.png`)을 드래그앤드롭
+> 4. **Update comment** 클릭
+>
 > 동료 리뷰를 받은 후, `/clear` → `/hs-full-cycle-ralph #<number>`로 Phase 2를 시작하세요.
 
 - **Do NOT proceed to Phase 2.** Wait for peer review approval before continuing.
