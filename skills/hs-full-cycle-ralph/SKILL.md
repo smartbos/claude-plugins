@@ -53,7 +53,9 @@ Check the **latest comments** on the issue for these markers:
 
 **목표:** 기술 설계 전에 "무엇을 만들 것인가"를 정의하고 팀 합의를 도출한다.
 
-### Step 1: 레포 정보 확인
+### Step 1: 레포 정보 확인 & 태스크 유형 판별
+
+#### 1-1. 레포 정보 확인
 
 ```bash
 gh repo view --json owner,name --jq '"\(.owner.login)/\(.name)"'
@@ -61,12 +63,28 @@ gh repo view --json owner,name --jq '"\(.owner.login)/\(.name)"'
 
 결과를 `{owner}/{repo}`로 저장한다 (이슈 생성 등에 사용).
 
+#### 1-2. 태스크 유형 판별
+
+태스크 설명을 분석하여 `ui` 또는 `non-ui` 유형을 판별한다.
+
+| 유형 | 키워드/특징 | 예시 |
+|------|-------------|------|
+| `ui` | 화면, 폼, 대시보드, 프론트엔드, UI, 컴포넌트, 페이지 | 사용자 프로필 페이지 추가, 대시보드 개선 |
+| `non-ui` | API, 백엔드, 인프라, 리팩토링, CLI, 마이그레이션, 파이프라인, 배치 | REST API 추가, DB 마이그레이션, CI/CD 파이프라인 |
+
+1. 태스크 설명에서 유형을 추론한다
+2. 사용자에게 결과를 제시하고 확인을 요청한다:
+   > "이 태스크를 **[ui/non-ui]** 유형으로 판별했습니다. [판별 근거 1-2줄]. 맞습니까?"
+3. 사용자 확인 후 유형을 `{task_type}`으로 저장한다 (이후 Phase 1 단계에서 참조)
+
 ### Step 2: Product Discovery 인터뷰
 
 **Delegated skill:** `/product-designer`
 
 - Tell the user: "Product Discovery 인터뷰를 시작합니다. UX 프레임워크를 활용하여 체계적으로 진행합니다."
-- Call `/product-designer` with the task description. **Append this instruction to the arguments:**
+- Call `/product-designer` with the task description. **유형에 따라 아래 지시문을 선택하여 arguments에 추가:**
+
+**`ui` 유형:**
   > "Double Diamond의 Discover 단계로 제품 발견 인터뷰를 진행하세요. 아래 5개 영역을 순서대로, 한 번에 한 질문씩 물어보세요. 각 답변이 불충분하면 후속 질문으로 구체화하세요.
   > 1. **페르소나 정의**: User Journey Mapping 프레임워크를 활용하여 주 사용자의 역할, 기술 수준, 핵심 동기, 페인 포인트를 파악하세요.
   > 2. **핵심 유저 시나리오**: 사용자가 달성하려는 주요 목표 1-3개를 User Journey 단계(Awareness → Consideration → Action → Retention)로 구조화하세요.
@@ -75,12 +93,26 @@ gh repo view --json owner,name --jq '"\(.owner.login)/\(.name)"'
   > 5. **엣지 케이스**: 빈 상태, 동시성, 에러, 대량 데이터 시나리오를 파악하세요.
   > 최종 결과물로 파일을 생성하지 마세요. 대화로만 진행하세요."
 
-### Step 3: UX 플로우 Mermaid 생성
+**`non-ui` 유형:**
+  > "Double Diamond의 Discover 단계로 제품 발견 인터뷰를 진행하세요. 이 태스크는 UI가 없는 백엔드/인프라/API 작업입니다. 아래 5개 영역을 순서대로, 한 번에 한 질문씩 물어보세요. 각 답변이 불충분하면 후속 질문으로 구체화하세요.
+  > 1. **API 소비자/클라이언트 정의**: 이 시스템을 호출하는 주체(프론트엔드, 다른 서비스, CLI 사용자, 크론잡 등)의 역할과 요구사항을 파악하세요.
+  > 2. **시스템 인터랙션 시나리오**: 주요 요청-응답 흐름 1-3개를 단계별로 구조화하세요 (입력 → 처리 → 출력 → 에러).
+  > 3. **API/모듈 인벤토리**: 시나리오 기반으로 필요한 엔드포인트, 모듈, 서비스의 구조 초안을 제안하고, 사용자에게 수정/확정을 받으세요.
+  > 4. **핵심 비즈니스 룰**: 권한, 제한, 유효성 검사, rate limiting 등 정책을 파악하세요.
+  > 5. **엣지 케이스**: 타임아웃, 동시성, 에러 전파, 대량 데이터, 장애 복구 시나리오를 파악하세요.
+  > 최종 결과물로 파일을 생성하지 마세요. 대화로만 진행하세요."
 
-[references/mermaid-guide.md](references/mermaid-guide.md)의 "Phase 1" 섹션을 참고하여:
+### Step 3: Mermaid 다이어그램 생성
 
+[references/mermaid-guide.md](references/mermaid-guide.md)의 "Phase 1" 섹션을 참고하여 유형별 다이어그램을 생성한다.
+
+**`ui` 유형:**
 - **User Journey Diagram**: 핵심 시나리오별 사용자 경험 흐름 (필수)
 - **Screen Flow Flowchart**: 화면 간 이동과 분기 (필수)
+
+**`non-ui` 유형:**
+- **Sequence Diagram**: 핵심 시스템 인터랙션 흐름 (필수)
+- **Flowchart / Architecture Diagram**: 분기 로직 또는 시스템 구조 (해당 시)
 
 생성한 다이어그램을 사용자에게 보여주고 피드백을 반영한다.
 
@@ -103,6 +135,8 @@ gh repo view --json owner,name --jq '"\(.owner.login)/\(.name)"'
 사용자에게 보여주고 확인받는다.
 
 ### Step 5: HTML 와이어프레임 생성 & Playwright 스크린샷
+
+> 이 단계는 `ui` 유형에서만 실행한다. `non-ui` 유형이면 Step 6으로 건너뛴다.
 
 #### 5-1. 와이어프레임 HTML 작성
 
@@ -141,11 +175,15 @@ open wireframes/*.png  # macOS에서 스크린샷을 미리보기로 열기
 gh issue create --title "<feature title>" --body "<brief description>"
 ```
 
-Phase 1 결과를 이슈 코멘트로 포스팅한다:
+Phase 1 결과를 이슈 코멘트로 포스팅한다. **유형에 따라 아래 템플릿을 선택:**
+
+**`ui` 유형 템플릿:**
 
 ```
 gh issue comment <number> --body "$(cat <<'EOF'
 ## 🔍 Phase 1: Product Discovery
+
+> 태스크 유형: **ui**
 
 ### 페르소나
 [페르소나 정의 — 역할, 기술 수준, 동기]
@@ -190,6 +228,42 @@ EOF
 )"
 ```
 
+**`non-ui` 유형 템플릿:**
+
+```
+gh issue comment <number> --body "$(cat <<'EOF'
+## 🔍 Phase 1: Product Discovery
+
+> 태스크 유형: **non-ui**
+
+### API 소비자 / 클라이언트
+[시스템을 호출하는 주체 — 역할, 요구사항]
+
+### 시스템 인터랙션 흐름
+[Mermaid Sequence Diagram(s)]
+
+### 아키텍처 / 분기 흐름
+[Mermaid Flowchart / Architecture Diagram (해당 시)]
+
+### 비즈니스 룰
+| # | 카테고리 | 규칙 | 세부사항 |
+|---|----------|------|----------|
+[테이블 내용]
+
+### 엣지 케이스
+| # | 시나리오 | 예상 동작 |
+|---|----------|-----------|
+[테이블 내용]
+
+---
+👀 리뷰어: @reviewer1 @reviewer2
+승인 후 설계 & PRD를 진행합니다.
+
+🏁 Phase 1 Complete
+EOF
+)"
+```
+
 - **CRITICAL:** `gh issue comment` 명령의 exit code가 0인지 검증한다. 실패 시 재시도.
 
 #### 코멘트 편집 URL 제공
@@ -203,6 +277,8 @@ echo "코멘트 URL: $COMMENT_URL"
 
 ### Step 7: 사용자 안내 (리뷰 게이트)
 
+**`ui` 유형:**
+
 Tell the user:
 > **Phase 1 (Product Discovery) 완료.** 결과가 이슈 #\<number\>에 저장되었습니다.
 >
@@ -211,6 +287,15 @@ Tell the user:
 > 2. 코멘트 우측 상단 `···` → **Edit** 클릭
 > 3. 각 `[📎 이미지를 여기에 드롭: ...]` 플레이스홀더를 선택 후 로컬 스크린샷(`wireframes/*.png`)을 드래그앤드롭
 > 4. **Update comment** 클릭
+>
+> 동료 리뷰를 받은 후, `/clear` → `/hs-full-cycle-ralph #<number>`로 Phase 2를 시작하세요.
+
+**`non-ui` 유형:**
+
+Tell the user:
+> **Phase 1 (Product Discovery) 완료.** 결과가 이슈 #\<number\>에 저장되었습니다.
+>
+> 코멘트 링크: \<COMMENT_URL\>
 >
 > 동료 리뷰를 받은 후, `/clear` → `/hs-full-cycle-ralph #<number>`로 Phase 2를 시작하세요.
 

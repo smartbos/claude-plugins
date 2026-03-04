@@ -16,10 +16,18 @@
 
 ### Phase 1 (Product Discovery)
 
-유저 인터랙션 흐름과 비즈니스 정책을 시각화.
+유저 인터랙션 흐름과 비즈니스 정책을 시각화. Step 1에서 판별한 태스크 유형에 따라 다이어그램을 선택한다.
+
+#### UI 태스크
 
 - **필수**: User Journey Diagram (핵심 시나리오별 사용자 경험 흐름)
 - **필수**: 화면 흐름 Flowchart (화면 간 이동과 분기)
+
+#### Non-UI 태스크
+
+- **필수**: Sequence Diagram (핵심 시스템 인터랙션 흐름 — API 호출 체인, 서비스 간 통신)
+- **선택**: Flowchart (분기/라우팅/에러 핸들링 로직이 있을 때)
+- **선택**: Architecture Diagram (subgraph) (마이크로서비스, 레이어 구조 시각화가 필요할 때)
 
 ### Phase 2 (설계 & PRD)
 
