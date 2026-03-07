@@ -514,7 +514,7 @@ Tell the user:
 >
 > ```bash
 > cd <worktree_path>
-> RALPH_PROMPT="$HOME/.claude/scripts/ralph/CLAUDE.md" ~/.claude/scripts/ralph/ralph.sh 15
+> RALPH_PROMPT="$HOME/.claude/scripts/ralph/CLAUDE.md" ~/.claude/scripts/ralph/ralph.sh 30
 > ```![img.png](img.png)
 >
 > Ralph가 Phase 4(구현) → Phase 5(리뷰) → Phase 6(PR) → Phase 7(PR 리뷰 대응)을 자동 진행합니다.
@@ -546,7 +546,7 @@ Tell the user:
 >
 > ```bash
 > cd <worktree_path>
-> RALPH_PROMPT="$HOME/.claude/scripts/ralph/CLAUDE.md" ~/.claude/scripts/ralph/ralph.sh 15
+> RALPH_PROMPT="$HOME/.claude/scripts/ralph/CLAUDE.md" ~/.claude/scripts/ralph/ralph.sh 30
 > ```
 >
 > Ralph가 prd.json의 passes 상태를 확인하고 중단된 지점부터 이어서 진행합니다.

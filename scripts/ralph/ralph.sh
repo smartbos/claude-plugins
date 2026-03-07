@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-MAX_ITERATIONS=${1:-15}
+MAX_ITERATIONS=${1:-30}
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROMPT_FILE="${RALPH_PROMPT:-$SCRIPT_DIR/CLAUDE.md}"
 WORK_DIR="${RALPH_WORK_DIR:-.}"
