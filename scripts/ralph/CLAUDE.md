@@ -132,7 +132,7 @@ When working on `review` phase stories:
 ### 1. Automated Checks
 - Run the full test suite and show results
 - Run linter/type checks and show results
-- Review code changes since branch diverged: `git diff main...HEAD`
+- Review code changes since branch diverged: `git diff devel...HEAD`
 
 ### 2. Acceptance Criteria Verification
 - Read each story in `prd.json` and cross-check its `description` (acceptance criteria) against the actual implementation
@@ -191,7 +191,7 @@ When working on `ship` phase stories:
 - Verify all plan items are implemented (check against prd.json descriptions)
 - Create PR with **Intentional Decisions** and **Rejected Review Feedback** context:
 ```bash
-gh pr create --title "<title>" --body "$(cat <<'GHEOF'
+gh pr create --base devel --title "<title>" --body "$(cat <<'GHEOF'
 ## Summary
 Closes #<issueNumber>
 
@@ -303,6 +303,7 @@ If you discover a reusable pattern, add it to the `## Codebase Patterns` section
 - Follow existing code patterns
 - Create NEW commits only (never amend)
 - Do not modify .env files
+- **PR base branch**: `gh pr create` 시 반드시 `--base devel` 사용. `main`을 base로 하는 PR 절대 금지.
 
 ## Stop Condition
 

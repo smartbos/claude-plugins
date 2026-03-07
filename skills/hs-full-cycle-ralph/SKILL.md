@@ -439,7 +439,7 @@ Tell the user:
 {
   "id": "REV-001",
   "title": "코드 리뷰 & 테스트 검증",
-  "description": "Run full test suite. Review all changes since branch diverged from main. Check code style, potential bugs, edge cases. Fix any issues found.",
+  "description": "Run full test suite. Review all changes since branch diverged from base branch (devel). Check code style, potential bugs, edge cases. Fix any issues found.",
   "phase": "review",
   "priority": 100,
   "passes": false
@@ -447,7 +447,7 @@ Tell the user:
 {
   "id": "SHIP-001",
   "title": "최종 검증 & PR 생성",
-  "description": "Run final test suite and lint. Verify all plan items implemented. Create PR with structured description including: (1) Mermaid diagrams showing key implementation flows — use sequence diagram for service/API interactions, flowchart for routing/decision logic, data transformation diagram as applicable (1-3 diagrams, Korean labels, max 10 nodes each), (2) Intentional Decisions and Rejected Review Feedback sections. Reference issue #<issueNumber> with Closes. Save PR number to progress.txt.",
+  "description": "Run final test suite and lint. Verify all plan items implemented. Create PR with --base devel (NEVER use main as base). Include structured description: (1) Mermaid diagrams showing key implementation flows — use sequence diagram for service/API interactions, flowchart for routing/decision logic, data transformation diagram as applicable (1-3 diagrams, Korean labels, max 10 nodes each), (2) Intentional Decisions and Rejected Review Feedback sections. Reference issue #<issueNumber> with Closes. Save PR number to progress.txt.",
   "phase": "ship",
   "priority": 200,
   "passes": false
@@ -515,7 +515,7 @@ Tell the user:
 > ```bash
 > cd <worktree_path>
 > RALPH_PROMPT="$HOME/.claude/scripts/ralph/CLAUDE.md" ~/.claude/scripts/ralph/ralph.sh 15
-> ```
+> ```![img.png](img.png)
 >
 > Ralph가 Phase 4(구현) → Phase 5(리뷰) → Phase 6(PR) → Phase 7(PR 리뷰 대응)을 자동 진행합니다.
 > 완료되면 GitHub Issue #\<number\>에 각 Phase 결과가 기록됩니다.
@@ -567,3 +567,4 @@ Replace `<worktree_path>` with the actual worktree path (from `pwd`).
 8. **Blocked = stop**: If blocked at any phase, stop and discuss with the user. Do NOT skip phases.
 9. **Task granularity**: Each implement story must fit one context window. Split if too large.
 10. **Ralph handles Phase 4-7**: Do NOT manually implement. Let Ralph iterate autonomously.
+11. **PR base branch**: PR은 반드시 `--base devel`로 생성한다. **`main` 브랜치를 base로 하는 PR은 절대 금지.** 다른 브랜치(devel, staging 등)는 허용.
