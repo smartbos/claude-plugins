@@ -515,7 +515,7 @@ Tell the user:
 > ```bash
 > cd <worktree_path>
 > RALPH_PROMPT="$HOME/.claude/scripts/ralph/CLAUDE.md" ~/.claude/scripts/ralph/ralph.sh 30
-> ```![img.png](img.png)
+> ```
 >
 > Ralph가 Phase 4(구현) → Phase 5(리뷰) → Phase 6(PR) → Phase 7(PR 리뷰 대응)을 자동 진행합니다.
 > 완료되면 GitHub Issue #\<number\>에 각 Phase 결과가 기록됩니다.
