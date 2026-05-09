@@ -1,0 +1,8 @@
+{
+  "name": "gtd-microsoft-todo",
+  "version": "0.1.0",
+  "description": "Getting Things Done (GTD) workflow plugin powered by Microsoft To Do. Capture, process, plan, query, and weekly review — backed by the Microsoft Graph To Do API via MCP. Bundles the @mag-cie/mcp-microsoft-todo MCP server for one-step setup.",
+  "author": {
+    "name": "smartbosslee"
+  }
+}

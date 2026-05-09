@@ -13,6 +13,13 @@
       "version": "1.4.0",
       "source": "./plugins/journal",
       "category": "productivity"
+    },
+    {
+      "name": "gtd-microsoft-todo",
+      "description": "Getting Things Done (GTD) workflow powered by Microsoft To Do — capture, process, plan, query, and weekly review with bundled MCP",
+      "version": "0.1.0",
+      "source": "./plugins/gtd-microsoft-todo",
+      "category": "productivity"
     }
   ]
 }
