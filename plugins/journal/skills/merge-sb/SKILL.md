@@ -1,12 +1,12 @@
 ---
 name: merge-sb
-description: Use when user wants to merge work journals into personal Obsidian daily notes. Triggers on 'sb 병합', '저널 병합', '노트 병합', '데일리 노트 병합', 'merge sb'.
-aliases:
-  - 병합
-  - sync-sb
+description: "[DEPRECATED 2026-04-24] Do not auto-trigger. WJ 볼트에 더 이상 개인 저널을 작성하지 않으므로 병합할 소스가 존재하지 않음. 사용자가 명시적으로 '병합 무시하고 강제 실행'을 요청한 경우에만 실행."
+aliases: []
 ---
 
-# 저널 → sb 데일리 노트 병합
+# 저널 → sb 데일리 노트 병합 [DEPRECATED]
+
+> **2026-04-24부 폐기**. WJ(`warmble-jumble`) 볼트에 더 이상 개인 저널을 작성하지 않는다. 따라서 병합할 소스 자체가 없다. 이 스킬은 자동 트리거되지 않아야 하며, 사용자가 명시적으로 옛 데이터(2026-04 이전)를 한 번 더 정리해야 할 때만 수동 호출. 일반 회고·저널 작업에는 `/sgrade` 또는 `/j` 사용.
 
 warmble-jumble 업무 저널을 개인 Obsidian(sb) 데일리 노트로 병합한다.
 방향은 **단방향**: warmble-jumble → sb. sb 고유 내용은 보존하고, WJ 내용만 추가한다.
