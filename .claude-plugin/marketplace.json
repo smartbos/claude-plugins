@@ -9,8 +9,8 @@
   "plugins": [
     {
       "name": "journal",
-      "description": "Journal recording and S-grade performance coaching for the sb Obsidian vault. v2.0 BREAKING: switched from 12 core competencies to 웜블러드 행동 원칙 8+Spirit 2 framework; sgrade now reads sb vault daily notes directly and summarizes the day's Claude transcripts (via subagent) into the journal's archive section before evaluation; merge-sb deprecated.",
-      "version": "2.0.0",
+      "description": "Journal recording and S-grade performance coaching for the sb Obsidian vault. v2.0 BREAKING: switched from 12 core competencies to 웜블러드 행동 원칙 8+Spirit 2 framework; sgrade now reads sb vault daily notes directly and summarizes the day's Claude transcripts (via subagent) into the journal's archive section before evaluation. v2.1: merge-sb removed (source journal pipeline retired 2026-03; deprecated since 2026-04-24).",
+      "version": "2.1.0",
       "source": "./plugins/journal",
       "category": "productivity"
     },

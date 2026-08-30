@@ -1,7 +1,7 @@
 {
   "name": "journal",
-  "version": "1.4.0",
-  "description": "Personal productivity tools: journal recording, S-grade performance coaching, and cross-vault journal merging",
+  "version": "2.1.0",
+  "description": "Personal productivity tools: journal recording and S-grade performance coaching",
   "author": {
     "name": "smartbosslee"
   }
